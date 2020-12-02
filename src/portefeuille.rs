@@ -36,7 +36,7 @@ pub fn parse(lines: std::str::Lines) -> Result<String> {
 
     // Generate title
     Ok(format!(
-        "{} Relevé de portefeuille ({})",
+        "{} Relevé de portefeuille (+ {})",
         date?, acc_amount?
     ))
 }
