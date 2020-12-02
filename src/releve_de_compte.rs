@@ -28,7 +28,7 @@ pub fn parse(lines: std::str::Lines) -> Result<String> {
             );
             date = Ok(parse_date);
 
-            acc_amount = Ok(line[pos + 20..line.len() - 2].trim());
+            acc_amount = Ok(line[pos + 20..line.rfind(',').unwrap() + 3].trim());
         }
     }
 
