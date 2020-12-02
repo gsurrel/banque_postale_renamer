@@ -83,7 +83,12 @@ fn main() -> Result<()> {
             title += ".pdf";
             println!("{}", title);
 
-            std::fs::rename(entry.path(), title).context(format!("Failed to rename file {}", entry.path().display()))?;
+            // Get parent directory
+            if let Some(parent) = entry.path().parent() {
+                let parent = parent.join(title);
+                std::fs::rename(entry.path(), parent)
+                    .context(format!("Failed to rename file {}", entry.path().display()))?;
+            }
         } else {
             println!("Document not recognized");
         }
