@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, Context};
 use walkdir::WalkDir;
 
 mod compte_rendu_operation;
@@ -31,9 +31,9 @@ fn main() -> Result<()> {
             .arg("-layout")
             .arg(entry.path())
             .arg("-")
-            .output()?
+            .output().context("Failed to run 'pdftotext'")?
             .stdout;
-        let text = String::from_utf8(text)?;
+        let text = String::from_utf8(text).context("Failed to read the output of 'pdftotext'")?;
         let mut lines = text.lines();
 
         let doc_type;
@@ -75,7 +75,7 @@ fn main() -> Result<()> {
             title += ".pdf";
             println!("{}", title);
 
-            std::fs::rename(entry.path(), title)?;
+            std::fs::rename(entry.path(), title).context("Failed to rename file {}", entry.path().display())?;
         } else {
             println!("Document not recognized");
         }
