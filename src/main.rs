@@ -18,15 +18,23 @@ enum Type {
 }
 
 fn main() -> Result<()> {
-    println!("Renames all recognized PDF files from La Banque Postale in the current path");
-    for entry in WalkDir::new(".")
+    let matches = clap::App::new("banque_postale_renamer")
+        .version("1.0")
+        .author("Grégoire Surrel (https://gregoire.surrel.org)")
+        .about("Renames all recognized PDF files from La Banque Postale according to their contents")
+        .arg("<INPUT>              'Sets the input file or folder to use'")
+        .get_matches();
+
+    let path = matches.value_of_os("INPUT").unwrap();
+
+    for entry in WalkDir::new(path)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_file())
         .filter(|e| e.path().extension().is_some())
         .filter(|e| e.path().extension().unwrap() == "pdf")
     {
-        println!("{}", entry.path().display());
+        println!("Reading {}", entry.path().display());
         let text = std::process::Command::new("pdftotext")
             .arg("-layout")
             .arg(entry.path())
@@ -75,7 +83,7 @@ fn main() -> Result<()> {
             title += ".pdf";
             println!("{}", title);
 
-            std::fs::rename(entry.path(), title).context("Failed to rename file {}", entry.path().display())?;
+            std::fs::rename(entry.path(), title).context(format!("Failed to rename file {}", entry.path().display()))?;
         } else {
             println!("Document not recognized");
         }
